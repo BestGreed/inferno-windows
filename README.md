@@ -1,5 +1,19 @@
 # Inferno - unofficial implementation of Dante protocol
 
+## 本 fork 的维护说明
+
+本 fork 将根据实际需求独立维护相关适配。Windows 适配见 [`codex/windows-native-ptpv1`](https://github.com/BestGreed/inferno/tree/codex/windows-native-ptpv1)；此前向 GitHub 镜像提交的[草稿 PR #58](https://github.com/teodly/inferno/pull/58) 已撤回，代码和测试成果继续保留。
+
+在准备向 GitLab 上游提交改动时，维护者遇到了额外的账户验证要求。经过反复尝试，仍未能完成全部验证，因此决定暂不通过该平台提交贡献。
+
+这次经历增加了贡献准备之外的操作成本。我们希望代码协作平台能够提供更清晰、可访问的验证流程及替代途径。
+
+以上仅描述本次使用经历，不代表所有用户都会遇到相同情况。上游项目说明保留在下方。
+
+This fork is maintained independently according to its own requirements. While preparing an upstream contribution on GitLab, the maintainer encountered additional account-verification requirements and could not complete the process despite repeated attempts. The GitHub draft PR was withdrawn; the Windows adaptation and its test results remain available in this fork. We hope collaboration platforms can offer clearer, more accessible verification processes and alternative methods. This note describes one experience and does not imply that all users encounter the same requirements.
+
+---
+
 [GitLab](https://gitlab.com/lumifaza/inferno) | [GitHub](https://github.com/teodly/inferno) | [Principal author's website](https://info.lumifaza.org/)
 
 This project is named after [a place](https://en.wikipedia.org/wiki/Inferno_(Dante)) destined for those who create undocumented network protocols.
