@@ -1,4 +1,4 @@
-﻿# Inferno Windows compatibility fork
+# Inferno Windows — Native Windows Compatibility Fork
 
 这是基于 [Inferno](https://gitlab.com/lumifaza/inferno) 独立维护的兼容性适配 fork，重点是将现有发现、控制与双向音频协议用于 Windows 原生宿主。原项目由 Teodor Wozniak（Teo）及贡献者开发；本 fork 保留原有署名和许可证。
 
@@ -6,11 +6,11 @@ This independently maintained fork adds an experimental native Windows QPC/PTPv1
 
 ## 当前分支与入口
 
-- **Windows 适配源码**：[`codex/windows-native-ptpv1`](https://github.com/BestGreed/inferno/tree/codex/windows-native-ptpv1)。构建前请切换到该分支。
+- **Windows 适配源码**：[`codex/windows-native-ptpv1`](https://github.com/BestGreed/inferno-windows/tree/codex/windows-native-ptpv1)。构建前请切换到该分支。
 - **`dev` 分支**：保留上游基线与本 fork 文档；目前不包含 Windows 适配代码。
 - [兼容性与验证范围](docs/compatibility.md)
-- [Windows 构建与测试操作](https://github.com/BestGreed/inferno/blob/codex/windows-native-ptpv1/WINDOWS-TESTING.md)
-- [时钟实现与实验限制](https://github.com/BestGreed/inferno/blob/codex/windows-native-ptpv1/windows-clock/README.md)
+- [Windows 构建与测试操作](https://github.com/BestGreed/inferno-windows/blob/codex/windows-native-ptpv1/WINDOWS-TESTING.md)
+- [时钟实现与实验限制](https://github.com/BestGreed/inferno-windows/blob/codex/windows-native-ptpv1/windows-clock/README.md)
 - [更新记录](docs/CHANGELOG.md) · [维护说明](docs/maintenance.md) · [原上游文档归档](docs/archive/README.md)
 
 ## 适配范围
@@ -27,8 +27,8 @@ This independently maintained fork adds an experimental native Windows QPC/PTPv1
 ## 获取与构建
 
 ```powershell
-git clone --recurse-submodules --branch codex/windows-native-ptpv1 https://github.com/BestGreed/inferno.git
-cd inferno
+git clone --recurse-submodules --branch codex/windows-native-ptpv1 https://github.com/BestGreed/inferno-windows.git
+cd inferno-windows
 cargo build --locked --release -p inferno_aoip --example windows_loopback
 ```
 
@@ -36,7 +36,7 @@ cargo build --locked --release -p inferno_aoip --example windows_loopback
 
 ## 验证状态与限制
 
-公开代码基线 `902745c` 已通过 [Windows/MSVC 与 Ubuntu 托管检查](https://github.com/BestGreed/inferno/actions/runs/40500641157)：Windows 89 项库测试、Linux 92 项库测试，另有各平台 14 项时钟单元测试与 1 项 UDP 模拟主时钟测试；Windows Release 示例构建通过。
+公开代码基线 `902745c` 已通过 [Windows/MSVC 与 Ubuntu 托管检查](https://github.com/BestGreed/inferno-windows/actions/runs/40500641157)：Windows 89 项库测试、Linux 92 项库测试，另有各平台 14 项时钟单元测试与 1 项 UDP 模拟主时钟测试；Windows Release 示例构建通过。
 
 这些结果证明的是对应提交的构建和自动化测试，不等同于持续硬件互操作验收。历史开发中的物理设备观察与该公开基线的验证分开记录。绝对同步精度、长期稳定性、完整 Controller 遥测和独立来源时钟的漂移补偿仍需进一步工作；不声称稳定 250 µs TX。macOS 尚未在本 fork 验证。
 
