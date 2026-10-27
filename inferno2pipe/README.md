@@ -1,9 +1,5 @@
-Dante to raw audio pipe adapter.
+﻿# Inferno2pipe 文档
 
-# Quick start - how to record audio?
-1. [install Rust](https://rustup.rs/) and [FFmpeg](http://ffmpeg.org/)
-2. clone this repo with `--recursive` option (some dependencies are in submodules)
-3. `cd inferno2pipe`
-4. `./save_to_file 4` where `4` is number of channels
-   * if your Dante network operates with sample rate other that 48000Hz, prefix the command with e.g. `sample_rate=44100`
-5. make connections using [network-audio-controller](https://github.com/chris-ritsen/network-audio-controller) or Dante Controller
+原上游指南已[完整归档](../docs/archive/upstream-9767558/inferno2pipe/README.md)。历史运行方式和验证声明应结合对应上游版本理解。
+
+当前fork的平台范围与验证情况见[兼容性说明](../docs/compatibility.md)。
