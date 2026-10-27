@@ -1,11 +1,5 @@
-Tests Inferno audio over IP transfers in different conditions:
-* apps using Inferno library, directly or indirectly
-* Linux distributions
+﻿# Docker 双向集成测试文档
 
-Uses [WavDiff from diff_tools](https://github.com/aspt/diff_tools) for sample-perfect comparisons.
+原上游指南已[完整归档](../../docs/archive/upstream-9767558/test/dockerized_trx/README.md)。该测试套件的历史说明不等同于本fork本轮完成的硬件或容器验证。
 
-## How to use
-
-Run `run_test.sh`, it handles everything including building Docker images.
-
-It may spuriously fail due to realtime scheduling issues, a.k.a. xruns. In that case try again or [tune your system](../../README.md#audio-stability-tips).
+当前fork的平台范围与验证情况见[兼容性说明](../../docs/compatibility.md)。
