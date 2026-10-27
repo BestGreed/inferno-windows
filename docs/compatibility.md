@@ -1,4 +1,4 @@
-﻿# 兼容性与验证范围
+# 兼容性与验证范围
 
 ## 分支边界
 
@@ -23,7 +23,7 @@ Windows时钟当前通过`CLOCK_PATH`接收`interface IPv4,master IPv4,local MAC
 
 ## 已完成的自动化验证
 
-[对应902745c的运行记录](https://github.com/BestGreed/inferno/actions/runs/40500641157)：
+[对应902745c的运行记录](https://github.com/BestGreed/inferno-windows/actions/runs/40500641157)：
 
 - Windows/MSVC：89项音频库测试、14项时钟单元测试、1项临时回环UDP模拟主时钟测试；Release双向示例构建通过。
 - Ubuntu：92项音频库测试、14项时钟单元测试、1项临时回环UDP模拟主时钟测试。
@@ -31,4 +31,4 @@ Windows时钟当前通过`CLOCK_PATH`接收`interface IPv4,master IPv4,local MAC
 
 后续文档改动不扩大以上验证范围。合成数据拟合残差不是绝对同步精度；历史物理设备收发观察也不是当前公开提取版本的长时间验收。低延迟参数、源时钟与网络时钟失配、失锁/重获、实际设备互操作需分别测量。
 
-完整构建与运行步骤见[Windows操作说明](https://github.com/BestGreed/inferno/blob/codex/windows-native-ptpv1/WINDOWS-TESTING.md)。
+完整构建与运行步骤见[Windows操作说明](https://github.com/BestGreed/inferno-windows/blob/codex/windows-native-ptpv1/WINDOWS-TESTING.md)。
