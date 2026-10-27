@@ -58,6 +58,10 @@ Big thanks to [Project Pendulum](https://github.com/pendulum-project) (by [Trife
 * Inferno2pipe is clocked by incoming media flows. When nothing is connected, "time will stop" (i.e. recording will pause) until something is connected again - silence won't be generated unless at least one channel is connected.
 
 
+# Experimental Windows host
+
+A native QPC/PTPv1 follower and synthetic two-channel TX/RX host are available for opt-in testing. See [Windows build and test instructions](WINDOWS-TESTING.md). The ALSA backend remains Linux-only.
+
 # Quick start
 1. [Install Rust](https://rustup.rs/)
 2. If using a firewall, open UDP ports: 4455, 8700, 4400, 8800 (or others if [`INFERNO_ALT_PORT`](#environment-variables) is specified), 5353. Also, allow incoming UDP traffic from possible transmitters (port numbers are allocated by the OS so can't be known beforehand)

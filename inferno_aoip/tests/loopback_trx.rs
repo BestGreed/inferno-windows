@@ -6,6 +6,8 @@
 //!
 //! A fake usrvclock server provides the media clock.
 
+#![cfg(unix)] // Uses the Unix usrvclock daemon; Windows has a native PTP provider.
+
 use rand::rngs::SmallRng;
 use rand::{Rng, SeedableRng};
 use std::collections::BTreeMap;

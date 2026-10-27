@@ -109,3 +109,6 @@ pub mod utils {
   pub use crate::util::os::set_current_thread_realtime;
   pub use crate::util::thread::run_future_in_new_thread;
 }
+
+#[cfg(windows)]
+mod windows_clock;

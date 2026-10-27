@@ -2,9 +2,12 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::RwLock;
 
+#[cfg(windows)]
+pub use crate::windows_clock::{ClockOverlay, ClockReceiver};
+#[cfg(unix)]
 pub use usrvclock::AsyncClient as ClockReceiver;
+#[cfg(unix)]
 pub use usrvclock::ClockOverlay;
-use usrvclock::SafeClock;
 
 use crate::common::*;
 use crate::util::real_time_box_channel::{self, RealTimeBoxReceiver};
@@ -21,6 +24,7 @@ pub struct MediaClock {
   overlay: Option<ClockOverlay>,
 }
 
+#[cfg(unix)]
 #[inline(always)]
 fn timestamp_to_clock_value(ts: clock_steering::Timestamp) -> FineClock {
   (ts.seconds as FineClock).wrapping_mul(1_000_000_000).wrapping_add(ts.nanos as FineClock)
@@ -32,7 +36,7 @@ impl MediaClock {
     Self { overlay: None }
   }
   pub fn is_ready(&self) -> bool {
-    self.overlay.is_some()
+    self.now_ns().is_some()
   }
   pub fn get_overlay(&self) -> &Option<ClockOverlay> {
     &self.overlay
@@ -49,9 +53,19 @@ impl MediaClock {
     } */
     self.overlay = Some(overlay);
   }
+  pub fn clear_overlay(&mut self) {
+    self.overlay = None;
+  }
   #[inline(always)]
   pub fn now_ns(&self) -> Option<FineClock> {
-    self.overlay.map(|overlay| overlay.now_ns() as FineClock)
+    #[cfg(unix)]
+    {
+      self.overlay.map(|overlay| overlay.now_ns() as FineClock)
+    }
+    #[cfg(windows)]
+    {
+      self.overlay.and_then(|overlay| overlay.now_ns()).map(|ns| ns as FineClock)
+    }
   }
   #[inline(always)]
   pub fn now_in_timebase(&self, timebase_hz: u64) -> Option<LongClock> {
@@ -72,8 +86,7 @@ impl MediaClock {
     let now_ns = self.now_ns()?;
     let until_ns = (timestamp as u128 * 1_000_000_000u128 / timebase_hz as u128) as FineClock;
     let remaining = (until_ns as FineClockDiff).wrapping_sub(now_ns as FineClockDiff);
-    let corr = (remaining as f64 * self.overlay?.freq_scale) as FineClockDiff;
-    let duration = remaining - corr; // FIXME it should be * 1/(1+freq_scale) but should be good enough for low correction values
+    let duration = (remaining as f64 / (1.0 + self.overlay?.freq_scale)) as FineClockDiff;
     if duration > 0 {
       Some(std::time::Duration::from_nanos(duration as u64))
     } else {
@@ -88,8 +101,8 @@ impl MediaClock {
   ) -> Option<std::time::Duration> {
     let duration_in_tb = wrapped_diff(until, from);
     let duration_ns = (duration_in_tb as i64 * 1_000_000_000i64 / timebase_hz as i64) as FineClockDiff;
-    let corr = (duration_ns as f64 * self.overlay?.freq_scale) as FineClockDiff;
-    let duration = duration_ns - corr; // FIXME it should be * 1/(1+freq_scale) but should be good enough for low correction values
+    self.now_ns()?; // Reject expired Windows mappings before scheduling.
+    let duration = (duration_ns as f64 / (1.0 + self.overlay?.freq_scale)) as FineClockDiff;
     if duration > 0 {
       Some(std::time::Duration::from_nanos(duration as u64))
     } else {
@@ -98,11 +111,17 @@ impl MediaClock {
   }
 }
 
+#[cfg(unix)]
 pub fn start_clock_receiver(path: Option<PathBuf>) -> ClockReceiver {
   ClockReceiver::start(
     path.unwrap_or(usrvclock::DEFAULT_SERVER_SOCKET_PATH.into()),
     Box::new(|e| warn!("clock receive error: {e:?}")),
   )
+}
+
+#[cfg(windows)]
+pub fn start_clock_receiver(path: Option<PathBuf>) -> ClockReceiver {
+  ClockReceiver::start(path)
 }
 
 pub async fn make_shared_media_clock(
@@ -133,6 +152,8 @@ pub async fn make_shared_media_clock(
       let overlay_opt = rx.borrow_and_update().clone();
       if let Some(overlay) = overlay_opt {
         media_clock.write().unwrap().update_overlay(overlay);
+      } else {
+        media_clock.write().unwrap().clear_overlay();
       }
       if rx.changed().await.is_err() {
         break;
@@ -150,9 +171,7 @@ pub fn async_clock_receiver_to_realtime(
   tokio::spawn(async move {
     loop {
       let overlay_opt = receiver.borrow_and_update().clone();
-      if let Some(overlay) = overlay_opt {
-        rt_sender.send(Box::new(Some(overlay)));
-      }
+      rt_sender.send(Box::new(overlay_opt));
       if receiver.changed().await.is_err() {
         break;
       }
@@ -161,7 +180,7 @@ pub fn async_clock_receiver_to_realtime(
   rt_recv
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 mod tests {
   use super::*;
 

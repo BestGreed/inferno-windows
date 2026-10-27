@@ -881,6 +881,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "inferno-windows-clock"
+version = "0.1.0"
+
+[[package]]
 name = "inferno2pipe"
 version = "0.1.0"
 dependencies = [
@@ -909,6 +913,7 @@ dependencies = [
  "env_logger",
  "futures",
  "hex",
+ "inferno-windows-clock",
  "interprocess",
  "itertools 0.12.1",
  "local-ip-address",
@@ -1147,8 +1152,6 @@ dependencies = [
 [[package]]
 name = "netdev"
 version = "0.32.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3ba3caeaefe9a005afb16f8a78b52426d65324adba1666e310db9ef8c03265ac"
 dependencies = [
  "dlopen2",
  "ipnet",

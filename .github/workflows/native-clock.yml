@@ -1,0 +1,29 @@
+name: Native clock and audio library
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install stable Rust
+        run: rustup toolchain install stable --profile minimal
+      - name: Test clock (including ephemeral UDP mock)
+        run: cargo +stable test --locked -p inferno-windows-clock
+      - name: Test audio library
+        run: cargo +stable test --locked -p inferno_aoip --lib
+      - name: Build Windows test host
+        if: runner.os == 'Windows'
+        run: cargo +stable build --locked --release -p inferno_aoip --example windows_loopback

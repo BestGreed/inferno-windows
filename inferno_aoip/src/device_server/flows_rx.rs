@@ -14,13 +14,13 @@ use std::sync::{Arc, RwLock};
 use std::thread::JoinHandle;
 use std::time::{Duration, Instant};
 
+use crate::media_clock::ClockOverlay;
 use atomic::Ordering;
 use bool_vec::{boolvec, BoolVec};
 use itertools::Itertools;
 use mio::net::UdpSocket;
 use tokio::sync::mpsc;
 use tokio::sync::mpsc::error::TryRecvError;
-use usrvclock::ClockOverlay;
 
 pub const MAX_FLOWS: usize = 32;
 const WAKE_TOKEN: mio::Token = mio::Token(MAX_FLOWS);
@@ -207,6 +207,8 @@ impl<P: ProxyToSamplesBuffer> FlowsReceiverInternal<P> {
       if self.clock_recv.update() {
         if let Some(ovl) = self.clock_recv.get() {
           self.clock.update_overlay(*ovl);
+        } else {
+          self.clock.clear_overlay();
         }
       }
 

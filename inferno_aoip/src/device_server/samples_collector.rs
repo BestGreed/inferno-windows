@@ -136,6 +136,8 @@ impl<P: ProxyToSamplesBuffer> RealTimeSamplesReceiver<P> {
     if self.clock_recv.update() {
       if let Some(ovl) = self.clock_recv.get() {
         self.clock.update_overlay(*ovl);
+      } else {
+        self.clock.clear_overlay();
       }
     }
     &self.clock

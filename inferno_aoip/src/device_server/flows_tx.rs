@@ -248,15 +248,19 @@ impl<P: ProxyToSamplesBuffer> FlowsTransmitterInternal<P> {
     }
 
     let now = loop {
+      if self.commands_receiver.is_closed() {
+        return;
+      }
       self.clock_recv.update();
       if let Some(clkovl) = self.clock_recv.get() {
         let had_clock = self.clock.is_ready(); // TODO simplify
         self.clock.update_overlay(*clkovl);
         if !had_clock {
-          let now = self.now().unwrap();
-          for flow in &mut self.flows.iter_mut().filter_map(|opt| opt.as_mut()) {
-            flow.bootstrap_next_ts(now);
-            flow.keep_alive(now as Clock, self.sample_rate);
+          if let Some(now) = self.now() {
+            for flow in &mut self.flows.iter_mut().filter_map(|opt| opt.as_mut()) {
+              flow.bootstrap_next_ts(now);
+              flow.keep_alive(now as Clock, self.sample_rate);
+            }
           }
         }
       }
@@ -274,6 +278,26 @@ impl<P: ProxyToSamplesBuffer> FlowsTransmitterInternal<P> {
 
     set_current_thread_realtime(81);
     loop {
+      if self.commands_receiver.is_closed() {
+        return;
+      }
+      if self.clock_recv.update() {
+        if let Some(ovl) = self.clock_recv.get() {
+          let was_ready = self.clock.is_ready();
+          self.clock.update_overlay(*ovl);
+          if !was_ready {
+            if let Some(now) = self.now() {
+              for flow in self.flows.iter_mut().flatten() {
+                flow.bootstrap_next_ts(now);
+              }
+              next_on_transfer = now as Clock;
+              next_process_events = now as Clock;
+            }
+          }
+        } else {
+          self.clock.clear_overlay();
+        }
+      }
       let min_next_ts = self
         .flows
         .iter()
@@ -288,11 +312,6 @@ impl<P: ProxyToSamplesBuffer> FlowsTransmitterInternal<P> {
           .filter_map(|opt| opt)
           .min_by(|&a, &b| wrapped_diff(a as Clock, b as Clock).cmp(&0));
 
-      if self.clock_recv.update() {
-        if let Some(ovl) = self.clock_recv.get() {
-          self.clock.update_overlay(*ovl);
-        }
-      }
       let now = if let Some(now) = self.now() {
         now
       } else {
